@@ -1,0 +1,45 @@
+using ProductService.Api.Controllers;
+using ProductService.Application.Interfaces;
+using ProductService.Application.Services;
+using ProductService.Core.Entities;
+using ProductService.Infrastructure.Data;
+using ProductService.Infrastructure.Repositories;
+using SharedService.Lib.DI;
+using SharedService.Lib.Interfaces;
+using SharedService.Lib.PubSub;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+SharedServicesContainer.AddSharedServices<ProductDbContext>(builder.Services, builder.Configuration);
+
+builder.Services.AddScoped<IGenericRepository<Product>, ProductRepository>();
+builder.Services.AddScoped<IGenericRepository<ProductCategory>, CategoryRepository>();
+
+builder.Services.AddScoped<IProductService, ProductInfoService>();
+//builder.Services.AddScoped<ProductController>();
+
+builder.Services.AddSwaggerGen();
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+SharedServicesContainer.UseSharedPolicies(app);
+
+app.Run();
