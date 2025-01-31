@@ -15,6 +15,7 @@ namespace ProductService.Infrastructure.Data
         public  DbSet<ProductCategory> Categories { get; set; }
         public  DbSet<ProductOffer> ProductOffers { get; set; }
         public  DbSet<ProductReview> ProductReviews { get; set; }
+        public  DbSet<ProductImage> ProductImages { get; set; }
 
     }
 }
