@@ -31,7 +31,8 @@ namespace ProductService.Application.Mappings
             product.Description,
             product.Category.CategoryId,
             product.Brand,
-            product.Price
+            product.Price,
+            product.ProductImages.Select(x => x.ImageUrl).ToList()
         );
 
     }

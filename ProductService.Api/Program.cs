@@ -6,7 +6,6 @@ using ProductService.Infrastructure.Data;
 using ProductService.Infrastructure.Repositories;
 using SharedService.Lib.DI;
 using SharedService.Lib.Interfaces;
-using SharedService.Lib.PubSub;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,11 +34,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
+//app.UseHttpsRedirection();
+SharedServicesContainer.UseSharedPolicies(app);
 app.UseAuthorization();
 
 app.MapControllers();
-SharedServicesContainer.UseSharedPolicies(app);
 
 app.Run();

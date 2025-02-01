@@ -10,6 +10,7 @@ namespace ProductService.Application.DTOs
          [Required] string Description,
          [Required] int CategoryId,
          [Required] string Brand,
-         [Required, DataType(DataType.Currency)] double Price
+         [Required, DataType(DataType.Currency)] double Price,
+         List<string>? ProductImages
     );
 }
