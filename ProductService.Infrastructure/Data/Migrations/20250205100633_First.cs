@@ -21,12 +21,34 @@ namespace ProductService.Infrastructure.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CategoryName = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    ParentCategory = table.Column<string>(type: "text", nullable: true),
+                    ParentCategoryCategoryId = table.Column<int>(type: "integer", nullable: true),
                     UrlSlug = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.CategoryId);
+                    table.ForeignKey(
+                        name: "FK_Categories_Categories_ParentCategoryCategoryId",
+                        column: x => x.ParentCategoryCategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "CategoryId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductOffers",
+                columns: table => new
+                {
+                    OfferId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CouponCode = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    OfferType = table.Column<string>(type: "text", nullable: false),
+                    ApplicableOn = table.Column<string>(type: "text", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductOffers", x => x.OfferId);
                 });
 
             migrationBuilder.CreateTable(
@@ -78,26 +100,27 @@ namespace ProductService.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductOffers",
+                name: "ProductProductOffer",
                 columns: table => new
                 {
-                    OfferId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CouponCode = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    OfferType = table.Column<string>(type: "text", nullable: false),
-                    ApplicableOn = table.Column<string>(type: "text", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ProductId = table.Column<int>(type: "integer", nullable: true)
+                    OffersOfferId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ProductsProductId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductOffers", x => x.OfferId);
+                    table.PrimaryKey("PK_ProductProductOffer", x => new { x.OffersOfferId, x.ProductsProductId });
                     table.ForeignKey(
-                        name: "FK_ProductOffers_Products_ProductId",
-                        column: x => x.ProductId,
+                        name: "FK_ProductProductOffer_ProductOffers_OffersOfferId",
+                        column: x => x.OffersOfferId,
+                        principalTable: "ProductOffers",
+                        principalColumn: "OfferId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductProductOffer_Products_ProductsProductId",
+                        column: x => x.ProductsProductId,
                         principalTable: "Products",
-                        principalColumn: "ProductId");
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -108,11 +131,11 @@ namespace ProductService.Infrastructure.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Rating = table.Column<int>(type: "integer", nullable: false),
                     Comment = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     AttachmentUrls = table.Column<List<string>>(type: "text[]", nullable: true),
-                    ProductId = table.Column<int>(type: "integer", nullable: true)
+                    ProductId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -121,8 +144,14 @@ namespace ProductService.Infrastructure.Data.Migrations
                         name: "FK_ProductReviews_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "ProductId");
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_ParentCategoryCategoryId",
+                table: "Categories",
+                column: "ParentCategoryCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductImages_ProductId",
@@ -130,9 +159,9 @@ namespace ProductService.Infrastructure.Data.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductOffers_ProductId",
-                table: "ProductOffers",
-                column: "ProductId");
+                name: "IX_ProductProductOffer_ProductsProductId",
+                table: "ProductProductOffer",
+                column: "ProductsProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductReviews_ProductId",
@@ -152,10 +181,13 @@ namespace ProductService.Infrastructure.Data.Migrations
                 name: "ProductImages");
 
             migrationBuilder.DropTable(
-                name: "ProductOffers");
+                name: "ProductProductOffer");
 
             migrationBuilder.DropTable(
                 name: "ProductReviews");
+
+            migrationBuilder.DropTable(
+                name: "ProductOffers");
 
             migrationBuilder.DropTable(
                 name: "Products");

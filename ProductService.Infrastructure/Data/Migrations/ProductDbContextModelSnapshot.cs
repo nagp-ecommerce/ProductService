@@ -23,6 +23,21 @@ namespace ProductService.Infrastructure.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ProductProductOffer", b =>
+                {
+                    b.Property<Guid>("OffersOfferId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ProductsProductId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("OffersOfferId", "ProductsProductId");
+
+                    b.HasIndex("ProductsProductId");
+
+                    b.ToTable("ProductProductOffer");
+                });
+
             modelBuilder.Entity("ProductService.Core.Entities.Product", b =>
                 {
                     b.Property<int>("ProductId")
@@ -79,13 +94,15 @@ namespace ProductService.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ParentCategory")
-                        .HasColumnType("text");
+                    b.Property<int?>("ParentCategoryCategoryId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UrlSlug")
                         .HasColumnType("text");
 
                     b.HasKey("CategoryId");
+
+                    b.HasIndex("ParentCategoryCategoryId");
 
                     b.ToTable("Categories");
                 });
@@ -143,15 +160,10 @@ namespace ProductService.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("OfferId");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductOffers");
                 });
@@ -173,7 +185,7 @@ namespace ProductService.Infrastructure.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Rating")
@@ -182,8 +194,8 @@ namespace ProductService.Infrastructure.Data.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("ProductReviewId");
 
@@ -192,10 +204,25 @@ namespace ProductService.Infrastructure.Data.Migrations
                     b.ToTable("ProductReviews");
                 });
 
+            modelBuilder.Entity("ProductProductOffer", b =>
+                {
+                    b.HasOne("ProductService.Core.Entities.ProductOffer", null)
+                        .WithMany()
+                        .HasForeignKey("OffersOfferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProductService.Core.Entities.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductsProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ProductService.Core.Entities.Product", b =>
                 {
                     b.HasOne("ProductService.Core.Entities.ProductCategory", "Category")
-                        .WithMany()
+                        .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -203,36 +230,47 @@ namespace ProductService.Infrastructure.Data.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("ProductService.Core.Entities.ProductCategory", b =>
+                {
+                    b.HasOne("ProductService.Core.Entities.ProductCategory", "ParentCategory")
+                        .WithMany()
+                        .HasForeignKey("ParentCategoryCategoryId");
+
+                    b.Navigation("ParentCategory");
+                });
+
             modelBuilder.Entity("ProductService.Core.Entities.ProductImage", b =>
                 {
-                    b.HasOne("ProductService.Core.Entities.Product", null)
+                    b.HasOne("ProductService.Core.Entities.Product", "Product")
                         .WithMany("ProductImages")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("ProductService.Core.Entities.ProductOffer", b =>
-                {
-                    b.HasOne("ProductService.Core.Entities.Product", null)
-                        .WithMany("Offers")
-                        .HasForeignKey("ProductId");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("ProductService.Core.Entities.ProductReview", b =>
                 {
-                    b.HasOne("ProductService.Core.Entities.Product", null)
+                    b.HasOne("ProductService.Core.Entities.Product", "Product")
                         .WithMany("ProductReviews")
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("ProductService.Core.Entities.Product", b =>
                 {
-                    b.Navigation("Offers");
-
                     b.Navigation("ProductImages");
 
                     b.Navigation("ProductReviews");
+                });
+
+            modelBuilder.Entity("ProductService.Core.Entities.ProductCategory", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

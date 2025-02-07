@@ -22,7 +22,9 @@ builder.Services.AddScoped<IGenericRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IGenericRepository<ProductCategory>, CategoryRepository>();
 
 builder.Services.AddScoped<IProductService, ProductInfoService>();
-//builder.Services.AddScoped<ProductController>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ProductController>();
+builder.Services.AddScoped<CategoryController>();
 
 builder.Services.AddSwaggerGen();
 var app = builder.Build();

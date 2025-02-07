@@ -10,7 +10,8 @@ namespace ProductService.Core.Entities
 
         public string CategoryName { get; set; }
         public string Description { get; set; }
-        public string? ParentCategory { get; set; }
+        public ProductCategory? ParentCategory { get; set; }
+        public List<Product> Products { get; set; }
         public string? UrlSlug { get; set; }
        
     }

@@ -13,5 +13,8 @@ namespace ProductService.Core.Entities
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
+        // navigational property
+        public List<Product> Products { get; set; }
+
     }
 }

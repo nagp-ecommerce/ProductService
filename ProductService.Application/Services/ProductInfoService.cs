@@ -39,6 +39,7 @@ namespace ProductService.Application.Services
             };
             await _snsClient.PublishMessageAsync(topicArn, message);
         }
+
         public async Task UpdateProduct(ProductDto productDto)
         {
             var category = await _categoryRepository.GetByIdAsync(productDto.CategoryId);

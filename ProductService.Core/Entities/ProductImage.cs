@@ -6,7 +6,9 @@ namespace ProductService.Core.Entities
     {
         [Key]
         public int ImageId { get; set; }
-        public int ProductId { get; set; }
+
+        // navigational property
+        public Product Product { get; set; }
         public string ImageUrl { get; set; }
         public bool IsThumbnail { get; set; }
         public int? DisplayOrder { get; set; }
