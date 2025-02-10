@@ -12,7 +12,6 @@ namespace ProductService.Application.Mappings
     {
         public static Product ToEntity(this ProductDto productDto, ProductCategory category) => new Product()
         {
-            ProductId=productDto.Id,
             ProductName=productDto.ProductName,
             Price=productDto.Price,
             Description=productDto.Description,
@@ -26,13 +25,15 @@ namespace ProductService.Application.Mappings
         };
 
         public static ProductDto FromEntity(this Product product) => new ProductDto(
-            product.ProductId,
             product.ProductName,
             product.Description,
-            product.Category.CategoryId,
+            product?.Category?.CategoryId ?? 0,
             product.Brand,
             product.Price,
-            product.ProductImages.Select(x => x.ImageUrl).ToList()
+            product.ProductImages is not null
+                ? product.ProductImages.Select(x => x.ImageUrl).ToList() 
+                : new List<string>() { "" },
+            product.ProductId
         );
 
     }

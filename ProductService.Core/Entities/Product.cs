@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ProductService.Core.Entities
 {
@@ -10,6 +11,7 @@ namespace ProductService.Core.Entities
 
         public string ProductName { get; set; }
         public string? Description { get; set; }
+        [JsonIgnore]
         public ProductCategory Category { get; set; }
         public int InstockQuanity { get; set; }
         public double Price { get; set; }

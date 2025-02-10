@@ -29,7 +29,7 @@ namespace ProductService.Infrastructure.Repositories
             catch (Exception ex)
             {
                 logger.LogError(ex, $"Error occured while creating the {typeof(T).Name}");
-                return new Response { Success = false, Message= $"Error occured while creating the {typeof(T).Name}" };
+                return new Response { Success = false, Message= $"Error occured while creating the {typeof(T).Name} {ex.Message}" };
             }
 
         }
@@ -49,7 +49,7 @@ namespace ProductService.Infrastructure.Repositories
             catch (Exception ex)
             {
                 logger.LogError(ex, $"Error occured while deleting the {typeof(T).Name}");
-                return new Response { Success = false, Message = $"Error occured while deleting the {typeof(T).Name}" };
+                return new Response { Success = false, Message = $"Error occured while deleting the {typeof(T).Name} {ex.Message}" };
             }
         }
 
@@ -74,7 +74,7 @@ namespace ProductService.Infrastructure.Repositories
             catch (Exception ex)
             {
                 logger.LogError(ex, $"Error occured while updating the {typeof(T).Name}");
-                return new Response { Success = false, Message = $"Error occured while updating the {typeof(T).Name}" };
+                return new Response { Success = false, Message = $"Error occured while updating the {typeof(T).Name} {ex.Message}" };
             }
         }
 

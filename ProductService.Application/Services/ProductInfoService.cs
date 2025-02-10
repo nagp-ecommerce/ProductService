@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Amazon.SimpleNotificationService.Model;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
 using ProductService.Application.Mappings;
@@ -8,63 +10,85 @@ using SharedService.Lib.PubSub;
 
 namespace ProductService.Application.Services
 {
-    public class ProductInfoService: IProductService
+    public class ProductInfoService : IProductService
     {
         private IGenericRepository<Product> _productRepository;
         private IGenericRepository<ProductCategory> _categoryRepository;
-        private PublisherService _snsClient;
-        private string topicArn = String.Empty;
+        private IPublisherService _PublisherService;
+        private string topicArn;
+        private ILogger<ProductInfoService> _logger;
+
         public ProductInfoService(
             IGenericRepository<Product> productRepository,
             IGenericRepository<ProductCategory> categoryRepository,
-            PublisherService snsClient,
-            IConfiguration config
+            IPublisherService PublisherService,
+            IConfiguration config,
+            ILogger<ProductInfoService> logger
         )
         {
-            _productRepository=productRepository;
-            _categoryRepository=categoryRepository;
-            _snsClient=snsClient;
+            _productRepository = productRepository
+                ?? throw new ArgumentNullException(nameof(productRepository));
+            _categoryRepository = categoryRepository;
+            _PublisherService = PublisherService
+                ?? throw new ArgumentNullException(nameof(PublisherService));
             topicArn = config["SNS:TopicArn"] ?? "";
+            _logger = logger;
         }
-        public async Task AddProduct(ProductDto productDto) 
+        public async Task<Response> AddProduct(ProductDto productDto)
         {
             var category = await _categoryRepository.GetByIdAsync(productDto.CategoryId);
             var product = productDto.ToEntity(category);
-            await _productRepository.CreateAsync(product);
+            var response = await _productRepository.CreateAsync(product);
             var message = new Message<Product>
-            { 
+            {
                 Action = ProductEvent.CREATED,
                 Payload = product,
                 TimeStamp = DateTime.Now
             };
-            await _snsClient.PublishMessageAsync(topicArn, message);
+            if (response.Success)
+            {
+                await _PublisherService.PublishMessageAsync(topicArn, message);
+            }
+            return response;
         }
 
-        public async Task UpdateProduct(ProductDto productDto)
+        public async Task<Response> UpdateProduct(ProductDto productDto)
         {
             var category = await _categoryRepository.GetByIdAsync(productDto.CategoryId);
             var product = productDto.ToEntity(category);
-            await _productRepository.UpdateAsync(product);
+            var response = await _productRepository.UpdateAsync(product);
             var message = new Message<Product>
             {
                 Action = ProductEvent.UPDATED,
                 Payload = product,
                 TimeStamp = DateTime.Now
             };
-            await _snsClient.PublishMessageAsync(topicArn, message);
+            if (response.Success)
+            {
+                await _PublisherService.PublishMessageAsync(topicArn, message);
+            }
+            return response;
         }
 
-        public async Task RemoveProduct(ProductDto productDto) 
+        public async Task<Response> RemoveProduct(ProductDto productDto)
         {
-            await _productRepository.DeleteAsync(productDto.Id);
-            var product = productDto.ToEntity(null);
-            var message = new Message<Product>
+            if (productDto.Id > 0)
             {
-                Action = ProductEvent.DELETED,
-                Payload = product,
-                TimeStamp = DateTime.Now
-            };
-            await _snsClient.PublishMessageAsync(topicArn, message);
+                var response = await _productRepository.DeleteAsync(productDto.Id);
+                var product = productDto.ToEntity(null);
+                var message = new Message<Product>
+                {
+                    Action = ProductEvent.DELETED,
+                    Payload = product,
+                    TimeStamp = DateTime.Now
+                };
+                if (response.Success)
+                {
+                    await _PublisherService.PublishMessageAsync(topicArn, message);
+                }
+                return response;
+            }
+            return new Response { Success = false, Message = "Send correct product ID" };
         }
 
         public async Task<IEnumerable<Product>> GetAllProducts()

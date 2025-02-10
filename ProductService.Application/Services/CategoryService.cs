@@ -1,4 +1,5 @@
-﻿using ProductService.Application.DTOs;
+﻿using Microsoft.IdentityModel.Tokens;
+using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
 using ProductService.Core.Entities;
 using SharedService.Lib.Interfaces;
@@ -19,24 +20,25 @@ namespace ProductService.Application.Services
             return res!;
         }
 
-        public async Task CreateCategory(CategoryDto categoryDto)
+        public async Task<Response> CreateCategory(CategoryDto categoryDto)
         {
             var category = new ProductCategory()
             {
                 CategoryName = categoryDto.CategoryName,
                 Description = categoryDto.Description
             };
-            var parent = GetCategory(categoryDto.ParentCategoryId);
-            if (parent is not null)
-            {
-                category.ParentCategory = parent.Result;
-            }
-            await _categoryRepository.CreateAsync(category);
-        }
 
-        Task ICategoryService.GetCategory(int id)
-        {
-            throw new NotImplementedException();
+            if (!string.IsNullOrEmpty(categoryDto?.ParentCategoryId))
+            {
+                var parent = GetCategory(Convert.ToInt32(categoryDto.ParentCategoryId));
+                if (parent is not null)
+                {
+                    category.ParentCategory = parent.Result;
+                }
+            }
+            
+            var res = await _categoryRepository.CreateAsync(category);
+            return res;
         }
     }
 }

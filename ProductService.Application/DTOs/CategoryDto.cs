@@ -7,6 +7,6 @@ namespace ProductService.Application.DTOs
     (
          [Required] string CategoryName,
          [Required] string Description,
-         int ParentCategoryId
+         string ParentCategoryId = ""
     );
 }

@@ -6,7 +6,7 @@ using ProductService.Application.Interfaces;
 
 namespace ProductService.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/category")]
     [ApiController]
     [AllowAnonymous]
     public class CategoryController : ControllerBase
@@ -17,21 +17,21 @@ namespace ProductService.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public string GetCategory(int id)
+        public IActionResult GetCategory(int id)
         {
-            return "value";
+            return Ok("value");
         }
 
         [HttpPost]
         [Authorize(Roles ="Admin")]
-        public async Task<IActionResult> CreateProduct([FromBody] CategoryDto categoryDto)
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryDto categoryDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            await _categoryService.CreateCategory(categoryDto);
-            return Ok();
+            var res = await _categoryService.CreateCategory(categoryDto);
+            return Ok(res);
         }
     }
 }

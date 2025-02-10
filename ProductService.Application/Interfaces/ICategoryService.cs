@@ -1,11 +1,13 @@
-﻿using ProductService.Application.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using ProductService.Application.DTOs;
 using ProductService.Core.Entities;
+using SharedService.Lib.Interfaces;
 
 namespace ProductService.Application.Interfaces
 {
     public interface ICategoryService
     {
-        public Task GetCategory(int id);
-        public Task CreateCategory(CategoryDto dto);
+        public Task<ProductCategory> GetCategory(int id);
+        public Task<Response> CreateCategory(CategoryDto dto);
     }
 }

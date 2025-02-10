@@ -7,17 +7,18 @@ using ProductService.Application.Mappings;
 
 namespace ProductService.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/products")]
     [ApiController]
     [AllowAnonymous]
     public class ProductController : ControllerBase
     {
         private IProductService _productService;
         public ProductController(IProductService productService) {
-            _productService= productService;
+            _productService= productService 
+                ?? throw new ArgumentNullException(nameof(productService));
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IEnumerable<ProductDto>> GetProductList()
         {
             var res = await _productService.GetAllProducts();
@@ -39,8 +40,12 @@ namespace ProductService.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
-            await _productService.AddProduct(productDto);
-            return Ok();
+            if (productDto != null) 
+            {
+                var res = await _productService.AddProduct(productDto);
+                return res != null ? Ok(res) : BadRequest(Request);
+            }
+            return BadRequest(Request);
         }
 
         [HttpPut("{id}")]
@@ -51,16 +56,17 @@ namespace ProductService.Api.Controllers
             {
                 return BadRequest(ModelState);
             }
-            await _productService.UpdateProduct(productDto);
-            return Ok();
+            var res = await _productService.UpdateProduct(productDto);
+            return res != null ? Ok(res) : BadRequest(Request);
+
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromBody] ProductDto productDto)
         {
-            await _productService.RemoveProduct(productDto);
-            return Ok();
+            var res = await _productService.RemoveProduct(productDto);
+            return res  != null ? Ok(res) : BadRequest(Request);
         }
     }
 }
