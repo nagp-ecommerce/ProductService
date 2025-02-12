@@ -21,6 +21,20 @@ namespace ProductService.Api.Controllers
         {
             return Ok("value");
         }
+        
+        [HttpGet("[Action]")]
+        public async Task<IActionResult> GetProductsByCategory(string categoryName)
+        {
+            var res = await _categoryService.GetProductsByCategory(categoryName);
+            return Ok(res);
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetCategories()
+        {
+            var res = await _categoryService.GetAllCategories();
+            return Ok(res);
+        }
 
         [HttpPost]
         [Authorize(Roles ="Admin")]

@@ -11,6 +11,7 @@ namespace ProductService.Core.Entities
 
         public string ProductName { get; set; }
         public string? Description { get; set; }
+
         [JsonIgnore]
         public ProductCategory Category { get; set; }
         public int InstockQuanity { get; set; }
@@ -20,6 +21,8 @@ namespace ProductService.Core.Entities
         public string? Brand { get; set; }
         public double? Discount { get; set; }
         public List<ProductOffer>? Offers { get; set; }
+
+        public string MainImageUrl { get; set; } = "https://shop.azelab.com/images/home-4/1.jpg";
         public List<ProductImage>? ProductImages{ get; set; }
     }
 }

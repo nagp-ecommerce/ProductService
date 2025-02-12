@@ -172,6 +172,7 @@ namespace ProductService.Infrastructure.Data.Migrations
                 name: "IX_Products_CategoryId",
                 table: "Products",
                 column: "CategoryId");
+
         }
 
         /// <inheritdoc />

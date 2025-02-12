@@ -21,7 +21,8 @@ namespace ProductService.Application.Mappings
             InstockQuanity=10,
             Offers = [],
             ProductReviews = [],
-            UrlSlug = $"/{productDto.ProductName}"
+            UrlSlug = $"/{productDto.ProductName}",
+            MainImageUrl=productDto.MainImageUrl
         };
 
         public static ProductDto FromEntity(this Product product) => new ProductDto(
@@ -30,6 +31,7 @@ namespace ProductService.Application.Mappings
             product?.Category?.CategoryId ?? 0,
             product.Brand,
             product.Price,
+            product.MainImageUrl,
             product.ProductImages is not null
                 ? product.ProductImages.Select(x => x.ImageUrl).ToList() 
                 : new List<string>() { "" },

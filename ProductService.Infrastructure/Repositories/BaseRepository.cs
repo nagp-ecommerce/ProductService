@@ -8,7 +8,7 @@ namespace ProductService.Infrastructure.Repositories
 {
     public class BaseRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly ProductDbContext dbContext;
+        protected readonly ProductDbContext dbContext;
         private readonly ILogger<IGenericRepository<T>> logger;
         public BaseRepository(
             ProductDbContext _dbContext, 
@@ -109,8 +109,8 @@ namespace ProductService.Infrastructure.Repositories
         {
             try
             {
-                var product = await dbContext.Set<T>().Where(predicate).FirstOrDefaultAsync();
-                return product ?? null!;
+                var products = await dbContext.Set<T>().Where(predicate).FirstOrDefaultAsync();
+                return products ?? null!;
             }
             catch (Exception ex)
             {

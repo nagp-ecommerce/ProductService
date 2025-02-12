@@ -18,7 +18,7 @@ builder.Services.AddSwaggerGen();
 SharedServicesContainer.AddSharedServices<ProductDbContext>(builder.Services, builder.Configuration);
 
 builder.Services.AddScoped<IGenericRepository<Product>, ProductRepository>();
-builder.Services.AddScoped<IGenericRepository<ProductCategory>, CategoryRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 builder.Services.AddScoped<IProductService, ProductInfoService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -27,7 +27,7 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.ReferenceHandler = null; // System.Text.Json.Serialization.ReferenceHandler.Preserve;
     });
 
 builder.Services.AddSwaggerGen();

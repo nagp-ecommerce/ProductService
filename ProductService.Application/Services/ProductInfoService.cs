@@ -13,14 +13,14 @@ namespace ProductService.Application.Services
     public class ProductInfoService : IProductService
     {
         private IGenericRepository<Product> _productRepository;
-        private IGenericRepository<ProductCategory> _categoryRepository;
+        private ICategoryRepository _categoryRepository;
         private IPublisherService _PublisherService;
         private string topicArn;
         private ILogger<ProductInfoService> _logger;
 
         public ProductInfoService(
             IGenericRepository<Product> productRepository,
-            IGenericRepository<ProductCategory> categoryRepository,
+            ICategoryRepository categoryRepository,
             IPublisherService PublisherService,
             IConfiguration config,
             ILogger<ProductInfoService> logger
@@ -91,10 +91,17 @@ namespace ProductService.Application.Services
             return new Response { Success = false, Message = "Send correct product ID" };
         }
 
-        public async Task<IEnumerable<Product>> GetAllProducts()
+        public async Task<IEnumerable<ProductDto>> GetAllProducts()
         {
             var res = await _productRepository.GetAllAsync();
-            return res;
+            var list = res.Select(p => p.FromEntity()).ToList();
+            return list;
+        }
+
+        public async Task<ProductDto> GetProductById(int id)
+        {
+            var product = await _productRepository.GetByIdAsync(id);
+            return product.FromEntity();
         }
     }
 }

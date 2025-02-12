@@ -13,37 +13,38 @@ namespace ProductService.Api.Controllers
     public class ProductController : ControllerBase
     {
         private IProductService _productService;
-        public ProductController(IProductService productService) {
-            _productService= productService 
+        public ProductController(IProductService productService)
+        {
+            _productService = productService
                 ?? throw new ArgumentNullException(nameof(productService));
         }
 
         [HttpGet("all")]
-        public async Task<IEnumerable<ProductDto>> GetProductList()
+        public async Task<IActionResult> GetProductList()
         {
             var res = await _productService.GetAllProducts();
-            var productDtos = res.ToList().Select(p => p.FromEntity());
-            return productDtos;
+            return res != null ? Ok(res) : BadRequest(Request);
         }
 
         [HttpGet("{id}")]
-        public string GetProduct(int id)
+        public async Task<IActionResult> GetProduct(int id)
         {
-            return "value";
+            var res = await _productService.GetProductById(id);
+            return res != null ? Ok(res) : BadRequest(Request);
         }
 
         [HttpPost]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateProduct([FromBody] ProductDto productDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if (productDto != null) 
+            if (productDto is not null)
             {
                 var res = await _productService.AddProduct(productDto);
-                return res != null ? Ok(res) : BadRequest(Request);
+                return res is not null ? Ok(res) : BadRequest(Request);
             }
             return BadRequest(Request);
         }
@@ -57,7 +58,7 @@ namespace ProductService.Api.Controllers
                 return BadRequest(ModelState);
             }
             var res = await _productService.UpdateProduct(productDto);
-            return res != null ? Ok(res) : BadRequest(Request);
+            return res is not null ? Ok(res) : BadRequest(Request);
 
         }
 
@@ -66,7 +67,7 @@ namespace ProductService.Api.Controllers
         public async Task<IActionResult> Delete([FromBody] ProductDto productDto)
         {
             var res = await _productService.RemoveProduct(productDto);
-            return res  != null ? Ok(res) : BadRequest(Request);
+            return res is not null ? Ok(res) : BadRequest(Request);
         }
     }
 }

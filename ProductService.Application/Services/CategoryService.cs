@@ -9,15 +9,28 @@ namespace ProductService.Application.Services
 {
     public class CategoryService: ICategoryService
     {
-        private IGenericRepository<ProductCategory> _categoryRepository;
-        public CategoryService(IGenericRepository<ProductCategory> categoryRepository) {
+        private ICategoryRepository _categoryRepository;
+        public CategoryService(ICategoryRepository categoryRepository) {
             _categoryRepository=categoryRepository;
         }
-
         public async Task<ProductCategory> GetCategory(int id)
         {
             var res = await _categoryRepository.GetByIdAsync(id);
             return res!;
+        }
+        public async Task<List<Product>> GetProductsByCategory(string categoryName)
+        {
+            var res = await _categoryRepository.GetProductsByCategoryAsync(categoryName);
+            return res;
+        }
+
+        public async Task<IEnumerable<ProductCategory>> GetAllCategories()
+        {
+            var res = await _categoryRepository.GetAllAsync();
+            var list = res.Select(c => 
+                new CategoryDto (c.CategoryName, c.Description)
+            ).ToList();
+            return res;
         }
 
         public async Task<Response> CreateCategory(CategoryDto categoryDto)

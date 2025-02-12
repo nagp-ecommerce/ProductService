@@ -9,6 +9,8 @@ namespace ProductService.Application.Interfaces
         public Task<Response> AddProduct(ProductDto product);
         public Task<Response> UpdateProduct(ProductDto product);
         public Task<Response> RemoveProduct(ProductDto product);
-        public Task<IEnumerable<Product>> GetAllProducts();
+        public Task<IEnumerable<ProductDto>> GetAllProducts();
+        public Task<ProductDto> GetProductById(int id);
+
     }
 }
