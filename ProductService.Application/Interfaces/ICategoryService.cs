@@ -10,7 +10,7 @@ namespace ProductService.Application.Interfaces
         public Task<ProductCategory> GetCategory(int id);
         public Task<Response> CreateCategory(CategoryDto dto);
         public Task<IEnumerable<ProductCategory>> GetAllCategories();
-        public Task<List<Product>> GetProductsByCategory(string categoryName);
+        public Task<IEnumerable<ProductDto>> GetProductsByCategory(string categoryName);
 
     }
 }

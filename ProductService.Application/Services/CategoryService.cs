@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
+using ProductService.Application.Mappings;
 using ProductService.Core.Entities;
 using SharedService.Lib.Interfaces;
 using SharedService.Lib.PubSub;
@@ -18,10 +19,11 @@ namespace ProductService.Application.Services
             var res = await _categoryRepository.GetByIdAsync(id);
             return res!;
         }
-        public async Task<List<Product>> GetProductsByCategory(string categoryName)
+        public async Task<IEnumerable<ProductDto>> GetProductsByCategory(string categoryName)
         {
             var res = await _categoryRepository.GetProductsByCategoryAsync(categoryName);
-            return res;
+            var dtoList = res.Select(p => p.FromEntity());
+            return dtoList;
         }
 
         public async Task<IEnumerable<ProductCategory>> GetAllCategories()
