@@ -4,18 +4,21 @@
 # For more information, please see https://aka.ms/containercompat
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 5002
 
 
 # This stage is used to build the service project
-FROM mcr.microsoft.com/dotnet/sdk:8.0-nanoserver-1809 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["ProductService.Api/ProductService.Api.csproj", "ProductService.Api/"]
-RUN dotnet restore "./ProductService.Api/ProductService.Api.csproj"
+COPY ["ProductService.Application/ProductService.Application.csproj", "ProductService.Application/"]
+COPY ["ProductService.Core/ProductService.Core.csproj", "ProductService.Core/"]
+COPY ["ProductService.Infrastructure/ProductService.Infrastructure.csproj", "ProductService.Infrastructure/"]
+COPY ["Ecommerce.SharedService/SharedService.Lib/SharedService.Lib.csproj", "Ecommerce.SharedService/SharedService.Lib/"]
+RUN dotnet restore "ProductService.Api/ProductService.Api.csproj"
 COPY . .
 WORKDIR "/src/ProductService.Api"
 RUN dotnet build "./ProductService.Api.csproj" -c %BUILD_CONFIGURATION% -o /app/build
