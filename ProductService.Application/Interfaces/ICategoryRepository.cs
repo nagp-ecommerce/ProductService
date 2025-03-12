@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProductService.Application.DTOs;
-using ProductService.Core.Entities;
+﻿using ProductService.Core.Entities;
 using SharedService.Lib.Interfaces;
 
 namespace ProductService.Application.Interfaces
