@@ -13,6 +13,11 @@ EXPOSE 5002
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# Install EF Core CLI
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
 COPY ["ProductService.Api/ProductService.Api.csproj", "ProductService.Api/"]
 COPY ["ProductService.Application/ProductService.Application.csproj", "ProductService.Application/"]
 COPY ["ProductService.Core/ProductService.Core.csproj", "ProductService.Core/"]
@@ -22,6 +27,7 @@ RUN dotnet restore "ProductService.Api/ProductService.Api.csproj"
 COPY . .
 WORKDIR "/src/ProductService.Api"
 RUN dotnet build "./ProductService.Api.csproj" -c %BUILD_CONFIGURATION% -o /app/build
+
 RUN dotnet ef database update --verbose
 
 # This stage is used to publish the service project to be copied to the final stage
