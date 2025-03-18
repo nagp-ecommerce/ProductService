@@ -22,6 +22,7 @@ RUN dotnet restore "ProductService.Api/ProductService.Api.csproj"
 COPY . .
 WORKDIR "/src/ProductService.Api"
 RUN dotnet build "./ProductService.Api.csproj" -c %BUILD_CONFIGURATION% -o /app/build
+RUN dotnet ef database update --verbose
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
@@ -32,4 +33,4 @@ RUN dotnet publish "./ProductService.Api.csproj" -c %BUILD_CONFIGURATION% -o /ap
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["sh", "-c", "echo DB_CONNECTION=$DB_CONNECTION && dotnet ef database update && dotnet ProductService.Api.dll"]
+ENTRYPOINT ["dotnet", "ProductService.Api.dll"]
